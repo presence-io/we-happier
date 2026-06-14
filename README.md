@@ -192,7 +192,7 @@ npm install -g we-happier
 ```
 
 Requires:
-- Node.js >= 20
+- Node.js >= 22.13
 - [tmux](https://github.com/tmux/tmux) (for session management)
 - [happier](https://happier.dev) (auto-installed if missing; version compatibility checked at launch)
 
