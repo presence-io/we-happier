@@ -48,7 +48,40 @@ Use standard tmux shortcuts:
 - \`Ctrl+B <number>\` — jump to window by number
 `;
 
-const GUARD_SKILL = `---
+function buildGuardSkill(registry: SandboxRegistry): string {
+  const enabled = registry.getEnabledEntries();
+  const blocked = registry.getBlockedEntries();
+
+  const tier1 = enabled.filter((e) => e.tier === "env_var");
+  const tier2 = enabled.filter((e) => e.tier === "home_wrapper");
+
+  const tier1Text =
+    tier1.length > 0 ? tier1.map((e) => e.name).join(", ") : "(none)";
+  const tier2Text =
+    tier2.length > 0
+      ? tier2
+          .map((e) => `${e.name} (${e.binaries.join(", ")})`)
+          .join(", ")
+      : "(none)";
+
+  let blockedSection = "";
+  if (blocked.length > 0) {
+    const blockedList = blocked
+      .map((e) => `- **${e.name}** (${e.binaries.join(", ")})`)
+      .join("\n");
+    blockedSection = `
+
+## Blocked tools (administrator policy)
+
+The following tools are blocked by administrator policy for this tenant. They will return exit code 126 if invoked:
+
+${blockedList}
+
+Do NOT attempt to bypass blocks by using full paths (e.g. \`/usr/bin/<tool>\`). The restriction is intentional.
+`;
+  }
+
+  return `---
 name: we-happier-sandbox-guard
 description: Credential isolation guard for we-happier tenants. Enforces whitelist policy for CLI credential operations.
 ---
@@ -60,11 +93,11 @@ This session runs inside a we-happier credential sandbox. All whitelisted CLI to
 ## Whitelisted tools (credentials ARE isolated)
 
 **Tier 1 — env var isolation (strongest):**
-AWS CLI, Google Cloud (gcloud/gsutil/bq), Azure CLI, Docker, kubectl, GitHub CLI (gh), Helm, Terraform, npm, pip, Gradle, Cargo, GPG, pnpm, Claude Code, Pulumi, Vercel, Fly.io, Supabase, Railway, Netlify
+${tier1Text}
 
 **Tier 2 — HOME wrapper isolation:**
-Aliyun CLI (aliyun), Feishu CLI (lark-cli), ossutil, Ansible, Vagrant
-
+${tier2Text}
+${blockedSection}
 ## CRITICAL RULES — read before running ANY credential command
 
 1. **Whitelisted tools**: You may freely run \`login\`, \`configure\`, \`auth\`, or any credential-setup command. Credentials are automatically stored in this tenant's isolated sandbox — they cannot leak to other tenants or the host system.
@@ -79,6 +112,8 @@ Aliyun CLI (aliyun), Feishu CLI (lark-cli), ossutil, Ansible, Vagrant
 
 4. **ssh is partially isolated**: The SSH config can be redirected per-command with \`-F\`, but \`~/.ssh/known_hosts\` and keys in \`~/.ssh/\` are shared. For SSH key operations, warn the user about shared state.
 
+5. **Never use full paths to bypass blocks**: If a tool is blocked or not whitelisted, do not try \`/usr/bin/<tool>\` or similar full-path invocations. The restriction is intentional and enforced by the administrator.
+
 ## How isolation works
 
 - **Tier 1 tools**: Environment variables redirect their config directories to \`$HAPPIER_HOME_DIR/../sandbox/<tool>/\`. This is invisible and automatic.
@@ -92,27 +127,20 @@ echo $HAPPIER_HOME_DIR       # isolated happier home
 echo $AWS_CONFIG_FILE        # example: shows sandbox path
 \`\`\`
 `;
-
-const SKILLS: Record<string, string> = {
-  "we-happier-spawn": SPAWN_SKILL,
-  "we-happier-sandbox-guard": GUARD_SKILL,
-};
+}
 
 export async function injectSkills(
   skillsDir: string,
   registry: SandboxRegistry,
 ): Promise<void> {
-  for (const [name, content] of Object.entries(SKILLS)) {
-    const dest = join(skillsDir, name);
-    await mkdir(dest, { recursive: true });
-    await writeFile(join(dest, "SKILL.md"), content);
-  }
+  const spawnDir = join(skillsDir, "we-happier-spawn");
+  await mkdir(spawnDir, { recursive: true });
+  await writeFile(join(spawnDir, "SKILL.md"), SPAWN_SKILL);
 
-  const guardSkillPath = join(
-    skillsDir,
-    "we-happier-sandbox-guard",
-    "WHITELIST.md",
-  );
+  const guardDir = join(skillsDir, "we-happier-sandbox-guard");
+  await mkdir(guardDir, { recursive: true });
+  await writeFile(join(guardDir, "SKILL.md"), buildGuardSkill(registry));
+
   const table = formatWhitelistTable(registry);
-  await writeFile(guardSkillPath, `# Current Whitelist\n\n${table}\n`);
+  await writeFile(join(guardDir, "WHITELIST.md"), `# Current Whitelist\n\n${table}\n`);
 }

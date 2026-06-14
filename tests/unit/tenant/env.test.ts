@@ -32,6 +32,20 @@ describe("buildTenantEnv", () => {
     expect(env.WE_HAPPIER_TMUX_SESSION).toBe("we-happier-alice");
   });
 
+  it("sets HAPPIER_DISABLE_AUTO_UPDATE to suppress interactive prompts", () => {
+    const registry = new SandboxRegistry([]);
+    const paths = makePaths("/tmp/tenants/alice");
+
+    const env = buildTenantEnv({
+      paths,
+      registry,
+      username: "alice",
+      tmuxSession: "we-happier-alice",
+    });
+
+    expect(env.HAPPIER_DISABLE_AUTO_UPDATE).toBe("1");
+  });
+
   it("includes sandbox env overrides from Tier 1 entries", () => {
     const registry = new SandboxRegistry([
       {

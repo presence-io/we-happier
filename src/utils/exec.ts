@@ -9,9 +9,10 @@ export interface ExecResult {
 export function exec(
   command: string,
   args: readonly string[],
+  options?: { env?: NodeJS.ProcessEnv },
 ): Promise<ExecResult> {
   return new Promise((resolve) => {
-    execFile(command, args, { encoding: "utf8" }, (error, stdout, stderr) => {
+    execFile(command, args, { encoding: "utf8", ...options }, (error, stdout, stderr) => {
       const errWithStatus = error as (NodeJS.ErrnoException & { status?: number }) | null;
       resolve({
         stdout: stdout,

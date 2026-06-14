@@ -1,6 +1,7 @@
 import { ensureTmuxInstalled } from "../../tmux/check.js";
 import { createTmuxWindowWithHappier } from "../../tmux/session.js";
-import { ensureHappierInstalled } from "../../happier/check.js";
+import { getRegistryForTenant, getTenantPaths } from "../../tenant/manager.js";
+import { buildTenantEnv, buildTenantPath } from "../../tenant/env.js";
 import { log } from "../../utils/logger.js";
 
 export async function handleSpawn(
@@ -16,23 +17,25 @@ export async function handleSpawn(
   }
 
   await ensureTmuxInstalled();
-  await ensureHappierInstalled();
+
+  const paths = getTenantPaths(tenant);
+  const registry = await getRegistryForTenant(tenant);
+  const tenantEnv = buildTenantEnv({
+    paths,
+    registry,
+    username: tenant,
+    tmuxSession: session,
+  });
+  tenantEnv.PATH = buildTenantPath(paths, process.env.PATH ?? "");
 
   const windowName = `task-${Date.now()}`;
   const cwd = process.cwd();
-
-  const env: Record<string, string> = {};
-  for (const [key, value] of Object.entries(process.env)) {
-    if (value !== undefined) {
-      env[key] = value;
-    }
-  }
 
   await createTmuxWindowWithHappier({
     sessionName: session,
     windowName,
     happierArgs,
-    env,
+    env: tenantEnv,
     cwd,
   });
 

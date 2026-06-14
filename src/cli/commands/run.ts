@@ -3,6 +3,7 @@ import { readTenantConfig, writeTenantConfig } from "../../tenant/config.js";
 import { getTenantPaths, getRegistryForTenant } from "../../tenant/manager.js";
 import { buildTenantEnv, buildTenantPath, tmuxSessionName } from "../../tenant/env.js";
 import { ensureTmuxInstalled } from "../../tmux/check.js";
+import { findHappierBinary, checkHappierAuth } from "../../happier/check.js";
 import {
   tmuxSessionExists,
   createTmuxSessionWithHappier,
@@ -14,6 +15,7 @@ import { log } from "../../utils/logger.js";
 export async function handleRun(
   username: string,
   happierArgs: readonly string[],
+  options: { detach?: boolean } = {},
 ): Promise<void> {
   await ensureTmuxInstalled();
 
@@ -40,6 +42,16 @@ export async function handleRun(
   const tenantEnv = buildTenantEnv({ paths, registry, username, tmuxSession: session });
   tenantEnv.PATH = buildTenantPath(paths, process.env.PATH ?? "");
 
+  const happierBin = await findHappierBinary();
+  if (happierBin) {
+    const authStatus = await checkHappierAuth(happierBin, tenantEnv);
+    if (authStatus === "expired") {
+      log.warn(
+        `Auth may be expired for "${username}". Consider: we-happier create ${username}`,
+      );
+    }
+  }
+
   const cwd = process.cwd();
   const exists = await tmuxSessionExists(session);
 
@@ -62,6 +74,13 @@ export async function handleRun(
       env: tenantEnv,
       cwd,
     });
+  }
+
+  if (options.detach) {
+    log.success(
+      `Session "${session}" started in detached mode. Attach with: tmux attach -t ${session}`,
+    );
+    return;
   }
 
   log.info("Attaching to tmux session...");

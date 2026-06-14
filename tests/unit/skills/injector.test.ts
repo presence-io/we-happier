@@ -76,4 +76,52 @@ describe("injectSkills", () => {
     );
     expect(spawnContent.length).toBeGreaterThan(100);
   });
+
+  it("guard skill lists tools dynamically from registry", async () => {
+    const registry = new SandboxRegistry(ENTRIES);
+    await injectSkills(skillsDir, registry);
+
+    const content = await readFile(
+      join(skillsDir, "we-happier-sandbox-guard", "SKILL.md"),
+      "utf-8",
+    );
+    expect(content).toContain("AWS CLI");
+    expect(content).toContain("Tier 1");
+  });
+
+  it("guard skill shows blocked tools when policy is applied", async () => {
+    const entries: ToolSandboxEntry[] = [
+      ...ENTRIES,
+      {
+        id: "docker",
+        name: "Docker",
+        binaries: ["docker"],
+        tier: "env_var",
+        envOverrides: { DOCKER_CONFIG: "{sandboxDir}/docker" },
+        enabledByDefault: true,
+      },
+    ];
+    const registry = new SandboxRegistry(entries).withPolicy(["docker"]);
+    await injectSkills(skillsDir, registry);
+
+    const content = await readFile(
+      join(skillsDir, "we-happier-sandbox-guard", "SKILL.md"),
+      "utf-8",
+    );
+    expect(content).toContain("Blocked tools");
+    expect(content).toContain("Docker");
+    expect(content).toContain("administrator policy");
+    expect(content).toContain("full paths");
+  });
+
+  it("guard skill omits blocked section when no tools are blocked", async () => {
+    const registry = new SandboxRegistry(ENTRIES);
+    await injectSkills(skillsDir, registry);
+
+    const content = await readFile(
+      join(skillsDir, "we-happier-sandbox-guard", "SKILL.md"),
+      "utf-8",
+    );
+    expect(content).not.toContain("Blocked tools");
+  });
 });

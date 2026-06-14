@@ -16,6 +16,7 @@ export function buildTenantEnv(options: TenantEnvOptions): Record<string, string
   return {
     ...sandboxEnv,
     HAPPIER_HOME_DIR: paths.happierHome,
+    HAPPIER_DISABLE_AUTO_UPDATE: "1",
     WE_HAPPIER_TENANT: username,
     WE_HAPPIER_TMUX_SESSION: tmuxSession,
   };

@@ -46,10 +46,11 @@ export function createProgram(): Command {
     .command("run")
     .argument("<username>", "Tenant username")
     .argument("[happier-args...]", "Arguments to pass to happier")
+    .option("-d, --detach", "Start session without attaching (headless mode)")
     .description("Launch happier in an isolated tmux session for a tenant")
     .action(
-      wrap((username: string, happierArgs: string[]) =>
-        handleRun(username, happierArgs),
+      wrap((username: string, happierArgs: string[], options: { detach?: boolean }) =>
+        handleRun(username, happierArgs, options),
       ),
     );
 
