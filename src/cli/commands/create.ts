@@ -1,10 +1,32 @@
-import { createTenant, activateTenant, getRegistry } from "../../tenant/manager.js";
+import { existsSync } from "node:fs";
+import { createTenant, activateTenant, getRegistry, getTenantPaths } from "../../tenant/manager.js";
+import { readTenantConfig } from "../../tenant/config.js";
 import { buildTenantEnv, buildTenantPath, tmuxSessionName } from "../../tenant/env.js";
 import { runHappierInteractive } from "../../happier/runner.js";
 import { log } from "../../utils/logger.js";
+import type { TenantPaths } from "../../tenant/paths.js";
 
 export async function handleCreate(username: string): Promise<void> {
-  const paths = await createTenant(username);
+  let paths: TenantPaths;
+
+  const existing = getTenantPaths(username);
+  if (existsSync(existing.root)) {
+    const config = await readTenantConfig(existing.configFile);
+    if (config?.status === "active") {
+      throw new Error(
+        `Tenant "${username}" already exists and is active. Use: we-happier run ${username}`,
+      );
+    }
+    if (config?.status === "disabled") {
+      throw new Error(
+        `Tenant "${username}" is disabled. Delete it first: we-happier delete ${username}`,
+      );
+    }
+    log.info(`Tenant "${username}" exists with status "${config?.status ?? "unknown"}". Retrying auth...`);
+    paths = existing;
+  } else {
+    paths = await createTenant(username);
+  }
 
   log.info("Starting happier auth login...");
 
@@ -22,7 +44,7 @@ export async function handleCreate(username: string): Promise<void> {
     log.warn(
       `Auth exited with code ${exitCode}. Tenant created but status remains "pending_auth".`,
     );
-    log.dim(`Run "we-happier create ${username}" again or manually auth.`);
+    log.dim(`Run "we-happier create ${username}" again to retry auth.`);
     return;
   }
 

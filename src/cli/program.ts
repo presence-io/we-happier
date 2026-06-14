@@ -7,16 +7,12 @@ import { handleList } from "./commands/list.js";
 import { handleStatus } from "./commands/status.js";
 import { log } from "../utils/logger.js";
 
-type ActionFn = (...args: string[]) => Promise<void>;
-
-function wrapHandler(fn: ActionFn): ActionFn {
-  return async (...args: string[]) => {
-    try {
-      await fn(...args);
-    } catch (err) {
+function wrap<T extends unknown[]>(fn: (...args: T) => Promise<void>) {
+  return (...args: T): void => {
+    fn(...args).catch((err: unknown) => {
       log.error(err instanceof Error ? err.message : String(err));
       process.exit(1);
-    }
+    });
   };
 }
 
@@ -32,37 +28,46 @@ export function createProgram(): Command {
     .command("create")
     .argument("<username>", "Tenant username (lowercase alphanumeric, 2-32 chars)")
     .description("Create a new tenant and authenticate with happier")
-    .action(wrapHandler((username) => handleCreate(username)));
+    .action(wrap((username: string) => handleCreate(username)));
 
   program
     .command("delete")
     .argument("<username>", "Tenant username to delete")
+    .option("-f, --force", "Skip confirmation prompt")
     .description("Delete a tenant and all its data")
-    .action(wrapHandler((username) => handleDelete(username)));
+    .action(
+      wrap((username: string, options: { force?: boolean }) =>
+        handleDelete(username, options),
+      ),
+    );
 
   program
     .command("run")
     .argument("<username>", "Tenant username")
     .argument("[happier-args...]", "Arguments to pass to happier")
     .description("Launch happier in an isolated tmux session for a tenant")
-    .action(wrapHandler((username, ...rest) => handleRun(username, rest)));
+    .action(
+      wrap((username: string, happierArgs: string[]) =>
+        handleRun(username, happierArgs),
+      ),
+    );
 
   program
     .command("spawn")
     .argument("[happier-args...]", "Arguments to pass to happier")
     .description("Spawn a new happier window in the current tenant tmux session")
-    .action(wrapHandler((...args) => handleSpawn(args)));
+    .action(wrap((happierArgs: string[]) => handleSpawn(happierArgs)));
 
   program
     .command("list")
     .description("List all tenants")
-    .action(wrapHandler(() => handleList()));
+    .action(wrap(() => handleList()));
 
   program
     .command("status")
     .argument("<username>", "Tenant username")
     .description("Show detailed status for a tenant")
-    .action(wrapHandler((username) => handleStatus(username)));
+    .action(wrap((username: string) => handleStatus(username)));
 
   return program;
 }
