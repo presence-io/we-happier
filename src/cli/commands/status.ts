@@ -1,9 +1,9 @@
 import { existsSync } from "node:fs";
-import { getTenantPaths, getRegistryForTenant } from "../../tenant/manager.js";
-import { readTenantConfig } from "../../tenant/config.js";
-import { tmuxSessionName } from "../../tenant/env.js";
-import { tmuxSessionExists } from "../../tmux/session.js";
-import { exec } from "../../utils/exec.js";
+import { getTenantPaths, getRegistryForTenant } from "@/tenant/manager";
+import { readTenantConfig } from "@/tenant/config";
+import { tmuxSessionName } from "@/tenant/env";
+import { tmuxSessionExists } from "@/tmux/session";
+import { exec } from "@/utils/exec";
 import chalk from "chalk";
 
 async function isBinaryInPath(binaryName: string): Promise<boolean> {

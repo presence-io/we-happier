@@ -1,4 +1,4 @@
-import { createProgram } from "./cli/program.js";
+import { createProgram } from "@/cli/program";
 
 const program = createProgram();
 program.parse();

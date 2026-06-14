@@ -1,5 +1,5 @@
-import { spawnInteractive } from "../utils/exec.js";
-import { ensureHappierInstalled } from "./check.js";
+import { spawnInteractive } from "@/utils/exec";
+import { ensureHappierInstalled } from "@/happier/check";
 
 export async function runHappierInteractive(
   args: readonly string[],

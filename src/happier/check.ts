@@ -1,5 +1,5 @@
-import { exec, spawnInteractive } from "../utils/exec.js";
-import { log } from "../utils/logger.js";
+import { exec, spawnInteractive } from "@/utils/exec";
+import { log } from "@/utils/logger";
 
 const MIN_HAPPIER_VERSION = "0.1.0";
 

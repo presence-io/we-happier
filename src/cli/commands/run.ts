@@ -1,16 +1,16 @@
 import { existsSync } from "node:fs";
-import { readTenantConfig, writeTenantConfig } from "../../tenant/config.js";
-import { getTenantPaths, getRegistryForTenant } from "../../tenant/manager.js";
-import { buildTenantEnv, buildTenantPath, tmuxSessionName } from "../../tenant/env.js";
-import { ensureTmuxInstalled } from "../../tmux/check.js";
-import { findHappierBinary, checkHappierAuth } from "../../happier/check.js";
+import { readTenantConfig, writeTenantConfig } from "@/tenant/config";
+import { getTenantPaths, getRegistryForTenant } from "@/tenant/manager";
+import { buildTenantEnv, buildTenantPath, tmuxSessionName } from "@/tenant/env";
+import { ensureTmuxInstalled } from "@/tmux/check";
+import { findHappierBinary, checkHappierAuth } from "@/happier/check";
 import {
   tmuxSessionExists,
   createTmuxSessionWithHappier,
   createTmuxWindowWithHappier,
   attachTmuxSession,
-} from "../../tmux/session.js";
-import { log } from "../../utils/logger.js";
+} from "@/tmux/session";
+import { log } from "@/utils/logger";
 
 export async function handleRun(
   username: string,

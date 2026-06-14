@@ -1,4 +1,4 @@
-import type { ToolSandboxEntry } from "./registry.js";
+import type { ToolSandboxEntry } from "@/sandbox/registry";
 
 export const DEFAULT_TOOL_REGISTRY: readonly ToolSandboxEntry[] = [
   // ── Tier 1: env var isolation ──────────────────────────────────────

@@ -1,12 +1,12 @@
 import { Command } from "commander";
-import { handleCreate } from "./commands/create.js";
-import { handleDelete } from "./commands/delete.js";
-import { handleRun } from "./commands/run.js";
-import { handleSpawn } from "./commands/spawn.js";
-import { handleList } from "./commands/list.js";
-import { handleStatus } from "./commands/status.js";
-import { handlePolicyDeny, handlePolicyAllow, handlePolicyList } from "./commands/policy.js";
-import { log } from "../utils/logger.js";
+import { handleCreate } from "@/cli/commands/create";
+import { handleDelete } from "@/cli/commands/delete";
+import { handleRun } from "@/cli/commands/run";
+import { handleSpawn } from "@/cli/commands/spawn";
+import { handleList } from "@/cli/commands/list";
+import { handleStatus } from "@/cli/commands/status";
+import { handlePolicyDeny, handlePolicyAllow, handlePolicyList } from "@/cli/commands/policy";
+import { log } from "@/utils/logger";
 
 function wrap<T extends unknown[]>(fn: (...args: T) => Promise<void>) {
   return (...args: T): void => {
@@ -23,7 +23,7 @@ export function createProgram(): Command {
   program
     .name("we-happier")
     .description("Multi-tenant happier CLI with credential isolation")
-    .version("0.1.0");
+    .version(__VERSION__);
 
   program
     .command("create")

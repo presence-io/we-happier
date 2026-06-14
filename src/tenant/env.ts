@@ -1,6 +1,6 @@
-import type { TenantPaths } from "./paths.js";
-import { buildSandboxEnv } from "../sandbox/env-builder.js";
-import type { SandboxRegistry } from "../sandbox/registry.js";
+import type { TenantPaths } from "@/tenant/paths";
+import { buildSandboxEnv } from "@/sandbox/env-builder";
+import type { SandboxRegistry } from "@/sandbox/registry";
 
 export interface TenantEnvOptions {
   paths: TenantPaths;

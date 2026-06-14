@@ -1,7 +1,7 @@
 import { existsSync } from "node:fs";
-import { getTenantPaths, getRegistry, regenerateSandbox } from "../../tenant/manager.js";
-import { readTenantConfig, writeTenantConfig } from "../../tenant/config.js";
-import { log } from "../../utils/logger.js";
+import { getTenantPaths, getRegistry, regenerateSandbox } from "@/tenant/manager";
+import { readTenantConfig, writeTenantConfig } from "@/tenant/config";
+import { log } from "@/utils/logger";
 import chalk from "chalk";
 
 async function loadConfig(username: string) {

@@ -1,7 +1,7 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
-import type { SandboxRegistry } from "../sandbox/registry.js";
-import { formatWhitelistTable } from "../sandbox/guard.js";
+import type { SandboxRegistry } from "@/sandbox/registry";
+import { formatWhitelistTable } from "@/sandbox/guard";
 
 const SPAWN_SKILL = `---
 name: we-happier-spawn

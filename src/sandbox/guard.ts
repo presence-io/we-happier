@@ -1,4 +1,4 @@
-import type { SandboxRegistry } from "./registry.js";
+import type { SandboxRegistry } from "@/sandbox/registry";
 
 export interface GuardCheckResult {
   allowed: boolean;

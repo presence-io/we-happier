@@ -1,4 +1,4 @@
-import { exec } from "../utils/exec.js";
+import { exec } from "@/utils/exec";
 
 export async function ensureTmuxInstalled(): Promise<void> {
   const result = await exec("tmux", ["-V"]);

@@ -1,8 +1,8 @@
-import { ensureTmuxInstalled } from "../../tmux/check.js";
-import { createTmuxWindowWithHappier } from "../../tmux/session.js";
-import { getRegistryForTenant, getTenantPaths } from "../../tenant/manager.js";
-import { buildTenantEnv, buildTenantPath } from "../../tenant/env.js";
-import { log } from "../../utils/logger.js";
+import { ensureTmuxInstalled } from "@/tmux/check";
+import { createTmuxWindowWithHappier } from "@/tmux/session";
+import { getRegistryForTenant, getTenantPaths } from "@/tenant/manager";
+import { buildTenantEnv, buildTenantPath } from "@/tenant/env";
+import { log } from "@/utils/logger";
 
 export async function handleSpawn(
   happierArgs: readonly string[],

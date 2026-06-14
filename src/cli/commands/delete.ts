@@ -1,8 +1,8 @@
-import { deleteTenant } from "../../tenant/manager.js";
-import { tmuxSessionName } from "../../tenant/env.js";
-import { killTmuxSession, tmuxSessionExists } from "../../tmux/session.js";
-import { confirm } from "../../utils/confirm.js";
-import { log } from "../../utils/logger.js";
+import { deleteTenant } from "@/tenant/manager";
+import { tmuxSessionName } from "@/tenant/env";
+import { killTmuxSession, tmuxSessionExists } from "@/tmux/session";
+import { confirm } from "@/utils/confirm";
+import { log } from "@/utils/logger";
 
 export async function handleDelete(
   username: string,

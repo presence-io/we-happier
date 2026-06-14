@@ -1,6 +1,6 @@
 import { writeFile, chmod } from "node:fs/promises";
 import { join } from "node:path";
-import type { ToolSandboxEntry } from "./registry.js";
+import type { ToolSandboxEntry } from "@/sandbox/registry";
 
 function buildHomeWrapperScript(
   binaryName: string,

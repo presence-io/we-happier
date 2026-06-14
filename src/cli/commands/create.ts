@@ -1,10 +1,10 @@
 import { existsSync } from "node:fs";
-import { createTenant, activateTenant, getRegistry, getTenantPaths } from "../../tenant/manager.js";
-import { readTenantConfig } from "../../tenant/config.js";
-import { buildTenantEnv, buildTenantPath, tmuxSessionName } from "../../tenant/env.js";
-import { runHappierInteractive } from "../../happier/runner.js";
-import { log } from "../../utils/logger.js";
-import type { TenantPaths } from "../../tenant/paths.js";
+import { createTenant, activateTenant, getRegistry, getTenantPaths } from "@/tenant/manager";
+import { readTenantConfig } from "@/tenant/config";
+import { buildTenantEnv, buildTenantPath, tmuxSessionName } from "@/tenant/env";
+import { runHappierInteractive } from "@/happier/runner";
+import { log } from "@/utils/logger";
+import type { TenantPaths } from "@/tenant/paths";
 
 export async function handleCreate(username: string): Promise<void> {
   let paths: TenantPaths;

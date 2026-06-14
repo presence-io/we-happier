@@ -1,14 +1,14 @@
 import { mkdir, rm, readdir, stat } from "node:fs/promises";
 import { existsSync } from "node:fs";
-import { resolveTenantPaths, validateUsername, type TenantPaths } from "./paths.js";
-import { readTenantConfig, writeTenantConfig, type TenantConfig } from "./config.js";
-import { resolveTenantsDir } from "../utils/paths.js";
-import { resolveSandboxDirs } from "../sandbox/env-builder.js";
-import { generateWrappers } from "../sandbox/wrapper-generator.js";
-import { injectSkills } from "../skills/injector.js";
-import { SandboxRegistry } from "../sandbox/registry.js";
-import { DEFAULT_TOOL_REGISTRY } from "../sandbox/defaults.js";
-import { log } from "../utils/logger.js";
+import { resolveTenantPaths, validateUsername, type TenantPaths } from "@/tenant/paths";
+import { readTenantConfig, writeTenantConfig, type TenantConfig } from "@/tenant/config";
+import { resolveTenantsDir } from "@/utils/paths";
+import { resolveSandboxDirs } from "@/sandbox/env-builder";
+import { generateWrappers } from "@/sandbox/wrapper-generator";
+import { injectSkills } from "@/skills/injector";
+import { SandboxRegistry } from "@/sandbox/registry";
+import { DEFAULT_TOOL_REGISTRY } from "@/sandbox/defaults";
+import { log } from "@/utils/logger";
 
 function getRegistry(): SandboxRegistry {
   return new SandboxRegistry(DEFAULT_TOOL_REGISTRY);

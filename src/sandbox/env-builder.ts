@@ -1,4 +1,4 @@
-import type { SandboxRegistry } from "./registry.js";
+import type { SandboxRegistry } from "@/sandbox/registry";
 
 export function buildSandboxEnv(
   registry: SandboxRegistry,

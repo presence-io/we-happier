@@ -1,8 +1,8 @@
 import { writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
-import { exec, spawnInteractive } from "../utils/exec.js";
-import { ensureHappierInstalled } from "../happier/check.js";
+import { exec, spawnInteractive } from "@/utils/exec";
+import { ensureHappierInstalled } from "@/happier/check";
 
 const MAX_WINDOWS_PER_SESSION = 10;
 const TMUX_HISTORY_LIMIT = 10000;
