@@ -1,0 +1,10 @@
+src/
+tests/
+*.config.ts
+*.config.js
+tsconfig.json
+.eslintrc*
+.prettierrc*
+.github/
+.claude/
+AGENTS.md
