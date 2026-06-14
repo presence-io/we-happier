@@ -1,5 +1,5 @@
 import { existsSync } from "node:fs";
-import { getTenantPaths, getRegistry } from "../../tenant/manager.js";
+import { getTenantPaths, getRegistryForTenant } from "../../tenant/manager.js";
 import { readTenantConfig } from "../../tenant/config.js";
 import { tmuxSessionName } from "../../tenant/env.js";
 import { tmuxSessionExists } from "../../tmux/session.js";
@@ -40,9 +40,11 @@ export async function handleStatus(username: string): Promise<void> {
   console.log(`  Skills:       ${paths.skillsDir}`);
   console.log();
 
-  const registry = getRegistry();
+  const registry = await getRegistryForTenant(username);
   const enabled = registry.getEnabledEntries();
-  console.log(chalk.bold(`Sandboxed tools (${enabled.length}):`));
+  const blocked = registry.getBlockedEntries();
+
+  console.log(chalk.bold(`Sandboxed tools (${enabled.length} enabled, ${blocked.length} blocked):`));
   for (const entry of enabled) {
     let installed = false;
     for (const b of entry.binaries) {
@@ -53,5 +55,13 @@ export async function handleStatus(username: string): Promise<void> {
     }
     const marker = installed ? chalk.green("installed") : chalk.dim("not found");
     console.log(`  ${entry.name.padEnd(20)} [${entry.tier}] ${marker}`);
+  }
+
+  if (blocked.length > 0) {
+    console.log();
+    console.log(chalk.bold("Blocked tools:"));
+    for (const entry of blocked) {
+      console.log(`  ${chalk.red(entry.name.padEnd(20))} [${entry.id}] blocked by policy`);
+    }
   }
 }

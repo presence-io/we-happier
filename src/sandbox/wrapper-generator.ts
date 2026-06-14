@@ -22,16 +22,42 @@ function buildHomeWrapperScript(
   ].join("\n");
 }
 
+function buildDenyWrapperScript(binaryName: string, toolName: string): string {
+  return [
+    "#!/bin/sh",
+    `# we-happier deny wrapper for ${binaryName} (blocked by policy)`,
+    `echo "we-happier: ${binaryName} (${toolName}) is blocked by administrator policy for this tenant." >&2`,
+    `echo "This restriction is enforced by we-happier. Do not attempt to bypass it." >&2`,
+    "exit 126",
+    "",
+  ].join("\n");
+}
+
 export async function generateWrappers(
   entries: readonly ToolSandboxEntry[],
   sandboxDir: string,
+  blockedIds?: ReadonlySet<string>,
 ): Promise<string[]> {
   const binDir = join(sandboxDir, "bin");
   const homeOverlayDir = join(sandboxDir, "home-overlay");
   const generated: string[] = [];
+  const blocked = blockedIds ?? new Set<string>();
 
   for (const entry of entries) {
-    if (entry.tier !== "home_wrapper" || !entry.enabledByDefault) continue;
+    if (!entry.enabledByDefault) continue;
+
+    if (blocked.has(entry.id)) {
+      for (const binaryName of entry.binaries) {
+        const wrapperPath = join(binDir, binaryName);
+        const script = buildDenyWrapperScript(binaryName, entry.name);
+        await writeFile(wrapperPath, script, { mode: 0o755 });
+        await chmod(wrapperPath, 0o755);
+        generated.push(wrapperPath);
+      }
+      continue;
+    }
+
+    if (entry.tier !== "home_wrapper") continue;
 
     for (const binaryName of entry.binaries) {
       const wrapperPath = join(binDir, binaryName);

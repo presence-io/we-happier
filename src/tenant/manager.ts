@@ -14,6 +14,17 @@ function getRegistry(): SandboxRegistry {
   return new SandboxRegistry(DEFAULT_TOOL_REGISTRY);
 }
 
+export async function getRegistryForTenant(
+  username: string,
+  env: NodeJS.ProcessEnv = process.env,
+): Promise<SandboxRegistry> {
+  const registry = getRegistry();
+  const paths = resolveTenantPaths(resolveTenantsDir(env), username);
+  const config = await readTenantConfig(paths.configFile);
+  if (!config?.disabledTools?.length) return registry;
+  return registry.withPolicy(config.disabledTools);
+}
+
 export async function createTenant(
   username: string,
   env: NodeJS.ProcessEnv = process.env,
@@ -64,6 +75,26 @@ export async function createTenant(
   log.success(`Tenant "${username}" created (pending auth).`);
 
   return paths;
+}
+
+export async function regenerateSandbox(
+  username: string,
+  env: NodeJS.ProcessEnv = process.env,
+): Promise<void> {
+  const paths = resolveTenantPaths(resolveTenantsDir(env), username);
+  if (!existsSync(paths.root)) {
+    throw new Error(`Tenant "${username}" does not exist.`);
+  }
+
+  const config = await readTenantConfig(paths.configFile);
+  if (!config) throw new Error(`Tenant "${username}" config not found.`);
+
+  const registry = getRegistry();
+  const blocked = new Set(config.disabledTools ?? []);
+  const projected = blocked.size > 0 ? registry.withPolicy([...blocked]) : registry;
+
+  await generateWrappers(DEFAULT_TOOL_REGISTRY, paths.sandboxDir, blocked);
+  await injectSkills(paths.skillsDir, projected);
 }
 
 export async function activateTenant(

@@ -1,6 +1,6 @@
 import { existsSync } from "node:fs";
 import { readTenantConfig, writeTenantConfig } from "../../tenant/config.js";
-import { getTenantPaths, getRegistry } from "../../tenant/manager.js";
+import { getTenantPaths, getRegistryForTenant } from "../../tenant/manager.js";
 import { buildTenantEnv, buildTenantPath, tmuxSessionName } from "../../tenant/env.js";
 import { ensureTmuxInstalled } from "../../tmux/check.js";
 import {
@@ -35,7 +35,7 @@ export async function handleRun(
   config.lastUsedAt = new Date().toISOString();
   await writeTenantConfig(paths.configFile, config);
 
-  const registry = getRegistry();
+  const registry = await getRegistryForTenant(username);
   const session = tmuxSessionName(username);
   const tenantEnv = buildTenantEnv({ paths, registry, username, tmuxSession: session });
   tenantEnv.PATH = buildTenantPath(paths, process.env.PATH ?? "");

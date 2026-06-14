@@ -9,6 +9,7 @@ export const TenantConfig = z.object({
   status: TenantStatus,
   createdAt: z.string(),
   lastUsedAt: z.string().optional(),
+  disabledTools: z.array(z.string()).optional(),
 });
 export type TenantConfig = z.infer<typeof TenantConfig>;
 

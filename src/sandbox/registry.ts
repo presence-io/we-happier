@@ -13,10 +13,15 @@ export interface ToolSandboxEntry {
 export class SandboxRegistry {
   private readonly entries: Map<string, ToolSandboxEntry>;
   private readonly binaryIndex: Map<string, string>;
+  private readonly blockedIds: ReadonlySet<string>;
 
-  constructor(entries: readonly ToolSandboxEntry[]) {
+  constructor(
+    entries: readonly ToolSandboxEntry[],
+    blockedIds?: ReadonlySet<string>,
+  ) {
     this.entries = new Map();
     this.binaryIndex = new Map();
+    this.blockedIds = blockedIds ?? new Set();
     for (const entry of entries) {
       this.entries.set(entry.id, entry);
       for (const bin of entry.binaries) {
@@ -25,8 +30,24 @@ export class SandboxRegistry {
     }
   }
 
+  withPolicy(disabledTools: readonly string[]): SandboxRegistry {
+    return new SandboxRegistry(
+      [...this.entries.values()],
+      new Set(disabledTools),
+    );
+  }
+
   isWhitelisted(binaryName: string): boolean {
     return this.binaryIndex.has(binaryName);
+  }
+
+  isBlocked(binaryName: string): boolean {
+    const id = this.binaryIndex.get(binaryName);
+    return id !== undefined && this.blockedIds.has(id);
+  }
+
+  isToolBlocked(toolId: string): boolean {
+    return this.blockedIds.has(toolId);
   }
 
   getEntryForBinary(binaryName: string): ToolSandboxEntry | undefined {
@@ -39,10 +60,22 @@ export class SandboxRegistry {
   }
 
   getEnabledEntries(): ToolSandboxEntry[] {
-    return [...this.entries.values()].filter((e) => e.enabledByDefault);
+    return [...this.entries.values()].filter(
+      (e) => e.enabledByDefault && !this.blockedIds.has(e.id),
+    );
+  }
+
+  getBlockedEntries(): ToolSandboxEntry[] {
+    return [...this.entries.values()].filter(
+      (e) => e.enabledByDefault && this.blockedIds.has(e.id),
+    );
   }
 
   getAllEntries(): ToolSandboxEntry[] {
     return [...this.entries.values()];
+  }
+
+  getBlockedIds(): ReadonlySet<string> {
+    return this.blockedIds;
   }
 }
