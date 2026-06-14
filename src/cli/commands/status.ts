@@ -3,7 +3,13 @@ import { getTenantPaths, getRegistry } from "../../tenant/manager.js";
 import { readTenantConfig } from "../../tenant/config.js";
 import { tmuxSessionName } from "../../tenant/env.js";
 import { tmuxSessionExists } from "../../tmux/session.js";
+import { exec } from "../../utils/exec.js";
 import chalk from "chalk";
+
+async function isBinaryInPath(binaryName: string): Promise<boolean> {
+  const result = await exec("which", [binaryName]);
+  return result.exitCode === 0;
+}
 
 export async function handleStatus(username: string): Promise<void> {
   const paths = getTenantPaths(username);
@@ -38,13 +44,13 @@ export async function handleStatus(username: string): Promise<void> {
   const enabled = registry.getEnabledEntries();
   console.log(chalk.bold(`Sandboxed tools (${enabled.length}):`));
   for (const entry of enabled) {
-    const installed = entry.binaries.some((b) => {
-      try {
-        return existsSync(`/usr/local/bin/${b}`) || existsSync(`/opt/homebrew/bin/${b}`);
-      } catch {
-        return false;
+    let installed = false;
+    for (const b of entry.binaries) {
+      if (await isBinaryInPath(b)) {
+        installed = true;
+        break;
       }
-    });
+    }
     const marker = installed ? chalk.green("installed") : chalk.dim("not found");
     console.log(`  ${entry.name.padEnd(20)} [${entry.tier}] ${marker}`);
   }

@@ -1,5 +1,5 @@
 import { existsSync } from "node:fs";
-import { readTenantConfig } from "../../tenant/config.js";
+import { readTenantConfig, writeTenantConfig } from "../../tenant/config.js";
 import { getTenantPaths, getRegistry } from "../../tenant/manager.js";
 import { buildTenantEnv, buildTenantPath, tmuxSessionName } from "../../tenant/env.js";
 import { ensureTmuxInstalled } from "../../tmux/check.js";
@@ -32,6 +32,9 @@ export async function handleRun(
     );
   }
 
+  config.lastUsedAt = new Date().toISOString();
+  await writeTenantConfig(paths.configFile, config);
+
   const registry = getRegistry();
   const session = tmuxSessionName(username);
   const tenantEnv = buildTenantEnv({ paths, registry, username, tmuxSession: session });
@@ -62,6 +65,5 @@ export async function handleRun(
   }
 
   log.info("Attaching to tmux session...");
-  const exitCode = await attachTmuxSession(session);
-  process.exit(exitCode);
+  await attachTmuxSession(session);
 }

@@ -71,7 +71,7 @@ describe("sandbox isolation", () => {
     const content = await readFile(wrapperPath, "utf-8");
 
     expect(content).toContain("#!/bin/sh");
-    expect(content).toContain("grep -v");
+    expect(content).toContain("grep -Fxv");
     expect(content).toContain('export HOME=');
     expect(content).toContain("home-overlay");
     expect(content).toContain('exec "$real_bin" "$@"');

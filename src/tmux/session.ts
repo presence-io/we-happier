@@ -1,3 +1,6 @@
+import { writeFile, unlink } from "node:fs/promises";
+import { join } from "node:path";
+import { tmpdir } from "node:os";
 import { exec, spawnInteractive } from "../utils/exec.js";
 import { ensureHappierInstalled } from "../happier/check.js";
 
@@ -10,12 +13,33 @@ export async function killTmuxSession(sessionName: string): Promise<void> {
   await exec("tmux", ["kill-session", "-t", sessionName]);
 }
 
-function buildEnvFlags(env: Record<string, string>): string[] {
-  const flags: string[] = [];
+function buildLaunchScript(
+  env: Record<string, string>,
+  happierBin: string,
+  happierArgs: readonly string[],
+): string {
+  const lines = ["#!/bin/sh"];
   for (const [key, value] of Object.entries(env)) {
-    flags.push("-e", `${key}=${value}`);
+    const escaped = value.replaceAll("'", "'\\''");
+    lines.push(`export ${key}='${escaped}'`);
   }
-  return flags;
+  const quotedArgs = happierArgs.map((a) => {
+    const escaped = a.replaceAll("'", "'\\''");
+    return `'${escaped}'`;
+  });
+  lines.push(`exec '${happierBin}' ${quotedArgs.join(" ")}`);
+  return lines.join("\n");
+}
+
+async function writeTempLaunchScript(
+  env: Record<string, string>,
+  happierBin: string,
+  happierArgs: readonly string[],
+): Promise<string> {
+  const script = buildLaunchScript(env, happierBin, happierArgs);
+  const scriptPath = join(tmpdir(), `we-happier-launch-${Date.now()}-${Math.random().toString(36).slice(2, 8)}.sh`);
+  await writeFile(scriptPath, script, { mode: 0o700 });
+  return scriptPath;
 }
 
 export async function createTmuxSessionWithHappier(options: {
@@ -28,21 +52,24 @@ export async function createTmuxSessionWithHappier(options: {
   const happierBin = await ensureHappierInstalled();
   const { sessionName, windowName, happierArgs, env, cwd } = options;
 
-  const envFlags = buildEnvFlags(env);
+  const scriptPath = await writeTempLaunchScript(env, happierBin, happierArgs);
 
-  await exec("tmux", [
-    "new-session",
-    "-d",
-    "-s",
-    sessionName,
-    "-n",
-    windowName,
-    "-c",
-    cwd,
-    ...envFlags,
-    happierBin,
-    ...happierArgs,
-  ]);
+  try {
+    await exec("tmux", [
+      "new-session",
+      "-d",
+      "-s",
+      sessionName,
+      "-n",
+      windowName,
+      "-c",
+      cwd,
+      "sh",
+      scriptPath,
+    ]);
+  } finally {
+    unlink(scriptPath).catch(() => {});
+  }
 }
 
 export async function createTmuxWindowWithHappier(options: {
@@ -55,20 +82,23 @@ export async function createTmuxWindowWithHappier(options: {
   const happierBin = await ensureHappierInstalled();
   const { sessionName, windowName, happierArgs, env, cwd } = options;
 
-  const envFlags = buildEnvFlags(env);
+  const scriptPath = await writeTempLaunchScript(env, happierBin, happierArgs);
 
-  await exec("tmux", [
-    "new-window",
-    "-t",
-    sessionName,
-    "-n",
-    windowName,
-    "-c",
-    cwd,
-    ...envFlags,
-    happierBin,
-    ...happierArgs,
-  ]);
+  try {
+    await exec("tmux", [
+      "new-window",
+      "-t",
+      sessionName,
+      "-n",
+      windowName,
+      "-c",
+      cwd,
+      "sh",
+      scriptPath,
+    ]);
+  } finally {
+    unlink(scriptPath).catch(() => {});
+  }
 }
 
 export async function attachTmuxSession(

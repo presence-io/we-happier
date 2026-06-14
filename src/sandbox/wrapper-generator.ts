@@ -10,7 +10,7 @@ function buildHomeWrapperScript(
     "#!/bin/sh",
     `# we-happier sandbox wrapper for ${binaryName} (HOME isolation)`,
     `sandbox_bin_dir="$(cd "$(dirname "$0")" && pwd)"`,
-    `clean_path="$(printf '%s' "$PATH" | tr ':' '\\n' | grep -v "^$sandbox_bin_dir$" | tr '\\n' ':')"`,
+    `clean_path="$(printf '%s' "$PATH" | tr ':' '\\n' | grep -Fxv "$sandbox_bin_dir" | tr '\\n' ':')"`,
     `real_bin="$(PATH="$clean_path" command -v "${binaryName}" 2>/dev/null || true)"`,
     `if [ -z "$real_bin" ]; then`,
     `  echo "we-happier: ${binaryName} not found in PATH (outside sandbox)" >&2`,

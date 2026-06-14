@@ -15,11 +15,18 @@ export type TenantConfig = z.infer<typeof TenantConfig>;
 export async function readTenantConfig(
   path: string,
 ): Promise<TenantConfig | null> {
+  let raw: string;
   try {
-    const raw = await readFile(path, "utf8");
+    raw = await readFile(path, "utf8");
+  } catch (err) {
+    if ((err as NodeJS.ErrnoException).code === "ENOENT") return null;
+    throw new Error(`Cannot read tenant config at ${path}: ${(err as Error).message}`);
+  }
+
+  try {
     return TenantConfig.parse(JSON.parse(raw));
-  } catch {
-    return null;
+  } catch (err) {
+    throw new Error(`Corrupt tenant config at ${path}: ${(err as Error).message}`);
   }
 }
 
