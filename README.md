@@ -20,7 +20,7 @@ we-happier policy alice deny docker  # Block Docker for this tenant
 
 Each tenant gets a fully isolated directory tree:
 
-```
+```text
 ~/.we-happier/tenants/alice/
 ├── tenant.json              # Metadata (status, timestamps, disabledTools)
 ├── happier/                 # HAPPIER_HOME_DIR (account, settings, logs)
@@ -50,7 +50,7 @@ Three layers of defense ensure credentials never leak between tenants:
 Tools that respect config env vars get pointed to the tenant's sandbox directory automatically. The AI agent inside happier inherits these env vars, so `aws configure`, `gcloud auth login`, `gh auth login`, etc. all write to the tenant sandbox.
 
 | Tool | Env vars |
-|------|----------|
+| ------ | ---------- |
 | AWS CLI | `AWS_CONFIG_FILE`, `AWS_SHARED_CREDENTIALS_FILE` |
 | Google Cloud | `CLOUDSDK_CONFIG` |
 | Azure CLI | `AZURE_CONFIG_DIR` |
@@ -78,7 +78,7 @@ Tools that respect config env vars get pointed to the tenant's sandbox directory
 Tools that hardcode `$HOME/.config-dir/` get shell wrapper scripts placed in `sandbox/bin/`. Each wrapper strips itself from PATH, finds the real binary, sets `HOME` to the overlay directory, then `exec`s.
 
 | Tool | Config path |
-|------|-------------|
+| ------ | ------------- |
 | Aliyun CLI | `~/.aliyun/` |
 | Lark CLI | `~/.lark-cli/` |
 | ossutil | `~/.ossutilconfig` |
@@ -121,7 +121,7 @@ Launch happier in an isolated tmux session.
 Options:
 
 | Flag | Description |
-|------|-------------|
+| ------ | ------------- |
 | `-d, --detach` | Start session without attaching. Useful for remote/headless use via SSH. Attach later with `tmux attach -t we-happier-<username>`. |
 
 ### `we-happier -- [happier-args...]`
@@ -164,7 +164,7 @@ Show detailed info for a tenant: paths, config, installed tools, and blocked too
 Kill tmux session (if running) and remove all tenant data. Prompts for confirmation before deleting.
 
 | Flag | Description |
-|------|-------------|
+| ------ | ------------- |
 | `-f, --force` | Skip the confirmation prompt. |
 
 ## AI skills
@@ -192,6 +192,7 @@ npm install -g we-happier
 ```
 
 Requires:
+
 - Node.js >= 22.13
 - [tmux](https://github.com/tmux/tmux) (for session management)
 - [happier](https://happier.dev) (auto-installed if missing; version compatibility checked at launch)
@@ -199,7 +200,7 @@ Requires:
 ## Configuration
 
 | Env var | Description | Default |
-|---------|-------------|---------|
+| --------- | ------------- | --------- |
 | `WE_HAPPIER_HOME` | Base directory for all tenant data | `~/.we-happier` |
 
 Per-tenant tool policy is stored in each tenant's `tenant.json` as `disabledTools: string[]` and managed via `we-happier policy` commands.
