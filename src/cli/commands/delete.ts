@@ -9,6 +9,11 @@ export async function handleDelete(
   options: { force?: boolean },
 ): Promise<void> {
   if (!options.force) {
+    if (!process.stdin.isTTY) {
+      throw new Error(
+        `Deleting a tenant requires confirmation. Use --force to skip: we-happier delete ${username} --force`,
+      );
+    }
     const yes = await confirm(
       `Delete tenant "${username}" and ALL its data (credentials, config, sandbox)?`,
     );

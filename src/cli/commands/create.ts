@@ -36,6 +36,16 @@ export async function handleCreate(username: string): Promise<void> {
     paths = await createTenant(username);
   }
 
+  if (!process.stdin.isTTY) {
+    log.warn(
+      `Auth login requires a terminal. Tenant created but status remains "pending_auth".`,
+    );
+    log.dim(
+      `Run "we-happier create ${username}" from a terminal to complete auth.`,
+    );
+    return;
+  }
+
   log.info("Starting happier auth login...");
 
   const registry = getRegistry();

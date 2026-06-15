@@ -12,19 +12,19 @@ Spawn a new happier session in a new tmux window for the current tenant.
 To spawn a new happier session in a different directory:
 
 ```bash
-we-happier -- --cwd /path/to/project
+we-happier spawn -- --cwd /path/to/project
 ```
 
 To spawn in the current directory:
 
 ```bash
-we-happier --
+we-happier spawn
 ```
 
 To spawn with additional happier flags:
 
 ```bash
-we-happier -- --yolo --prompt "your task here"
+we-happier spawn -- --yolo --prompt "your task here"
 ```
 
 ## Environment

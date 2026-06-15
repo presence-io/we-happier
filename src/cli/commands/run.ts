@@ -82,7 +82,7 @@ export async function handleRun(
     });
   }
 
-  if (options.detach) {
+  if (options.detach || !process.stdin.isTTY) {
     log.success(
       `Session "${session}" started in detached mode. Attach with: tmux attach -t ${session}`,
     );
@@ -90,5 +90,11 @@ export async function handleRun(
   }
 
   log.info("Attaching to tmux session...");
-  await attachTmuxSession(session);
+  const attachCode = await attachTmuxSession(session);
+  if (attachCode !== 0) {
+    log.warn(
+      `tmux attach exited with code ${attachCode}. The session is still running.`,
+    );
+    log.dim(`Attach manually with: tmux attach -t ${session}`);
+  }
 }
