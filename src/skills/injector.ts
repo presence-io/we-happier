@@ -1,7 +1,8 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
-import type { SandboxRegistry } from "@/sandbox/registry";
+
 import { formatWhitelistTable } from "@/sandbox/guard";
+import type { SandboxRegistry } from "@/sandbox/registry";
 
 const SPAWN_SKILL = `---
 name: we-happier-spawn
@@ -59,9 +60,7 @@ function buildGuardSkill(registry: SandboxRegistry): string {
     tier1.length > 0 ? tier1.map((e) => e.name).join(", ") : "(none)";
   const tier2Text =
     tier2.length > 0
-      ? tier2
-          .map((e) => `${e.name} (${e.binaries.join(", ")})`)
-          .join(", ")
+      ? tier2.map((e) => `${e.name} (${e.binaries.join(", ")})`).join(", ")
       : "(none)";
 
   let blockedSection = "";
@@ -142,5 +141,8 @@ export async function injectSkills(
   await writeFile(join(guardDir, "SKILL.md"), buildGuardSkill(registry));
 
   const table = formatWhitelistTable(registry);
-  await writeFile(join(guardDir, "WHITELIST.md"), `# Current Whitelist\n\n${table}\n`);
+  await writeFile(
+    join(guardDir, "WHITELIST.md"),
+    `# Current Whitelist\n\n${table}\n`,
+  );
 }

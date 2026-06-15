@@ -1,14 +1,23 @@
-import { mkdir, rm, readdir, stat } from "node:fs/promises";
 import { existsSync } from "node:fs";
-import { resolveTenantPaths, validateUsername, type TenantPaths } from "@/tenant/paths";
-import { readTenantConfig, writeTenantConfig, type TenantConfig } from "@/tenant/config";
-import { resolveTenantsDir } from "@/utils/paths";
+import { mkdir, readdir, rm, stat } from "node:fs/promises";
+
+import { DEFAULT_TOOL_REGISTRY } from "@/sandbox/defaults";
 import { resolveSandboxDirs } from "@/sandbox/env-builder";
+import { SandboxRegistry } from "@/sandbox/registry";
 import { generateWrappers } from "@/sandbox/wrapper-generator";
 import { injectSkills } from "@/skills/injector";
-import { SandboxRegistry } from "@/sandbox/registry";
-import { DEFAULT_TOOL_REGISTRY } from "@/sandbox/defaults";
+import {
+  type TenantConfig,
+  readTenantConfig,
+  writeTenantConfig,
+} from "@/tenant/config";
+import {
+  type TenantPaths,
+  resolveTenantPaths,
+  validateUsername,
+} from "@/tenant/paths";
 import { log } from "@/utils/logger";
+import { resolveTenantsDir } from "@/utils/paths";
 
 function getRegistry(): SandboxRegistry {
   return new SandboxRegistry(DEFAULT_TOOL_REGISTRY);
@@ -91,7 +100,8 @@ export async function regenerateSandbox(
 
   const registry = getRegistry();
   const blocked = new Set(config.disabledTools ?? []);
-  const projected = blocked.size > 0 ? registry.withPolicy([...blocked]) : registry;
+  const projected =
+    blocked.size > 0 ? registry.withPolicy([...blocked]) : registry;
 
   await generateWrappers(DEFAULT_TOOL_REGISTRY, paths.sandboxDir, blocked);
   await injectSkills(paths.skillsDir, projected);

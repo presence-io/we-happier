@@ -1,5 +1,5 @@
-import { deleteTenant } from "@/tenant/manager";
 import { tmuxSessionName } from "@/tenant/env";
+import { deleteTenant } from "@/tenant/manager";
 import { killTmuxSession, tmuxSessionExists } from "@/tmux/session";
 import { confirm } from "@/utils/confirm";
 import { log } from "@/utils/logger";

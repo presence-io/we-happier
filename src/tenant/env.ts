@@ -1,6 +1,6 @@
-import type { TenantPaths } from "@/tenant/paths";
 import { buildSandboxEnv } from "@/sandbox/env-builder";
 import type { SandboxRegistry } from "@/sandbox/registry";
+import type { TenantPaths } from "@/tenant/paths";
 
 export interface TenantEnvOptions {
   paths: TenantPaths;
@@ -9,7 +9,9 @@ export interface TenantEnvOptions {
   tmuxSession: string;
 }
 
-export function buildTenantEnv(options: TenantEnvOptions): Record<string, string> {
+export function buildTenantEnv(
+  options: TenantEnvOptions,
+): Record<string, string> {
   const { paths, registry, username, tmuxSession } = options;
   const sandboxEnv = buildSandboxEnv(registry, paths.sandboxDir);
 

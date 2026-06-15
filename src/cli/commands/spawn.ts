@@ -1,7 +1,7 @@
+import { buildTenantEnv, buildTenantPath } from "@/tenant/env";
+import { getRegistryForTenant, getTenantPaths } from "@/tenant/manager";
 import { ensureTmuxInstalled } from "@/tmux/check";
 import { createTmuxWindowWithHappier } from "@/tmux/session";
-import { getRegistryForTenant, getTenantPaths } from "@/tenant/manager";
-import { buildTenantEnv, buildTenantPath } from "@/tenant/env";
 import { log } from "@/utils/logger";
 
 export async function handleSpawn(

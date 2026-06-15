@@ -1,10 +1,11 @@
+import chalk from "chalk";
 import { existsSync } from "node:fs";
-import { getTenantPaths, getRegistryForTenant } from "@/tenant/manager";
+
 import { readTenantConfig } from "@/tenant/config";
 import { tmuxSessionName } from "@/tenant/env";
+import { getRegistryForTenant, getTenantPaths } from "@/tenant/manager";
 import { tmuxSessionExists } from "@/tmux/session";
 import { exec } from "@/utils/exec";
-import chalk from "chalk";
 
 async function isBinaryInPath(binaryName: string): Promise<boolean> {
   const result = await exec("which", [binaryName]);
@@ -31,7 +32,9 @@ export async function handleStatus(username: string): Promise<void> {
   console.log(`  Status:       ${config?.status ?? "unknown"}`);
   console.log(`  Created:      ${config?.createdAt ?? "-"}`);
   console.log(`  Last used:    ${config?.lastUsedAt ?? "-"}`);
-  console.log(`  tmux session: ${tmuxActive ? chalk.green("active") : chalk.dim("inactive")} (${session})`);
+  console.log(
+    `  tmux session: ${tmuxActive ? chalk.green("active") : chalk.dim("inactive")} (${session})`,
+  );
   console.log();
   console.log(chalk.bold("Paths:"));
   console.log(`  Root:         ${paths.root}`);
@@ -44,7 +47,11 @@ export async function handleStatus(username: string): Promise<void> {
   const enabled = registry.getEnabledEntries();
   const blocked = registry.getBlockedEntries();
 
-  console.log(chalk.bold(`Sandboxed tools (${enabled.length} enabled, ${blocked.length} blocked):`));
+  console.log(
+    chalk.bold(
+      `Sandboxed tools (${enabled.length} enabled, ${blocked.length} blocked):`,
+    ),
+  );
   for (const entry of enabled) {
     let installed = false;
     for (const b of entry.binaries) {
@@ -53,7 +60,9 @@ export async function handleStatus(username: string): Promise<void> {
         break;
       }
     }
-    const marker = installed ? chalk.green("installed") : chalk.dim("not found");
+    const marker = installed
+      ? chalk.green("installed")
+      : chalk.dim("not found");
     console.log(`  ${entry.name.padEnd(20)} [${entry.tier}] ${marker}`);
   }
 
@@ -61,7 +70,9 @@ export async function handleStatus(username: string): Promise<void> {
     console.log();
     console.log(chalk.bold("Blocked tools:"));
     for (const entry of blocked) {
-      console.log(`  ${chalk.red(entry.name.padEnd(20))} [${entry.id}] blocked by policy`);
+      console.log(
+        `  ${chalk.red(entry.name.padEnd(20))} [${entry.id}] blocked by policy`,
+      );
     }
   }
 }

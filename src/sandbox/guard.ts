@@ -40,9 +40,7 @@ export function formatWhitelistTable(registry: SandboxRegistry): string {
   lines.push("-----|----------|----------");
 
   for (const entry of registry.getEnabledEntries()) {
-    lines.push(
-      `${entry.name} | ${entry.binaries.join(", ")} | ${entry.tier}`,
-    );
+    lines.push(`${entry.name} | ${entry.binaries.join(", ")} | ${entry.tier}`);
   }
 
   return lines.join("\n");

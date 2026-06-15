@@ -1,9 +1,14 @@
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { mkdir, rm, readFile } from "node:fs/promises";
-import { join } from "node:path";
+import { mkdir, readFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
+
+import {
+  buildTenantEnv,
+  buildTenantPath,
+  tmuxSessionName,
+} from "@/tenant/env.js";
 import { createTenant, getRegistry } from "@/tenant/manager.js";
-import { buildTenantEnv, buildTenantPath, tmuxSessionName } from "@/tenant/env.js";
 
 describe("sandbox isolation", () => {
   let tempDir: string;
@@ -23,7 +28,12 @@ describe("sandbox isolation", () => {
     const paths = await createTenant("alice", env);
     const registry = getRegistry();
     const session = tmuxSessionName("alice");
-    const tenantEnv = buildTenantEnv({ paths, registry, username: "alice", tmuxSession: session });
+    const tenantEnv = buildTenantEnv({
+      paths,
+      registry,
+      username: "alice",
+      tmuxSession: session,
+    });
 
     expect(tenantEnv.HAPPIER_HOME_DIR).toBe(paths.happierHome);
     expect(tenantEnv.AWS_CONFIG_FILE).toContain(paths.sandboxDir);
@@ -72,7 +82,7 @@ describe("sandbox isolation", () => {
 
     expect(content).toContain("#!/bin/sh");
     expect(content).toContain("grep -Fxv");
-    expect(content).toContain('export HOME=');
+    expect(content).toContain("export HOME=");
     expect(content).toContain("home-overlay");
     expect(content).toContain('exec "$real_bin" "$@"');
   });

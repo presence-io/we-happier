@@ -1,11 +1,16 @@
 import { Command } from "commander";
+
 import { handleCreate } from "@/cli/commands/create";
 import { handleDelete } from "@/cli/commands/delete";
+import { handleList } from "@/cli/commands/list";
+import {
+  handlePolicyAllow,
+  handlePolicyDeny,
+  handlePolicyList,
+} from "@/cli/commands/policy";
 import { handleRun } from "@/cli/commands/run";
 import { handleSpawn } from "@/cli/commands/spawn";
-import { handleList } from "@/cli/commands/list";
 import { handleStatus } from "@/cli/commands/status";
-import { handlePolicyDeny, handlePolicyAllow, handlePolicyList } from "@/cli/commands/policy";
 import { log } from "@/utils/logger";
 
 function wrap<T extends unknown[]>(fn: (...args: T) => Promise<void>) {
@@ -27,7 +32,10 @@ export function createProgram(): Command {
 
   program
     .command("create")
-    .argument("<username>", "Tenant username (lowercase alphanumeric, 2-32 chars)")
+    .argument(
+      "<username>",
+      "Tenant username (lowercase alphanumeric, 2-32 chars)",
+    )
     .description("Create a new tenant and authenticate with happier")
     .action(wrap((username: string) => handleCreate(username)));
 
@@ -49,15 +57,21 @@ export function createProgram(): Command {
     .option("-d, --detach", "Start session without attaching (headless mode)")
     .description("Launch happier in an isolated tmux session for a tenant")
     .action(
-      wrap((username: string, happierArgs: string[], options: { detach?: boolean }) =>
-        handleRun(username, happierArgs, options),
+      wrap(
+        (
+          username: string,
+          happierArgs: string[],
+          options: { detach?: boolean },
+        ) => handleRun(username, happierArgs, options),
       ),
     );
 
   program
     .command("spawn")
     .argument("[happier-args...]", "Arguments to pass to happier")
-    .description("Spawn a new happier window in the current tenant tmux session")
+    .description(
+      "Spawn a new happier window in the current tenant tmux session",
+    )
     .action(wrap((happierArgs: string[]) => handleSpawn(happierArgs)));
 
   program

@@ -1,7 +1,8 @@
-import { listTenants } from "@/tenant/manager";
-import { tmuxSessionName } from "@/tenant/env";
-import { tmuxSessionExists } from "@/tmux/session";
 import chalk from "chalk";
+
+import { tmuxSessionName } from "@/tenant/env";
+import { listTenants } from "@/tenant/manager";
+import { tmuxSessionExists } from "@/tmux/session";
 
 export async function handleList(): Promise<void> {
   const tenants = await listTenants();

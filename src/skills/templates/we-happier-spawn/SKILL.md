@@ -30,6 +30,7 @@ we-happier -- --yolo --prompt "your task here"
 ## Environment
 
 This session runs inside a we-happier tenant sandbox.
+
 - Tenant name: check `$WE_HAPPIER_TENANT`
 - Tmux session: check `$WE_HAPPIER_TMUX_SESSION`
 - All CLI credential isolation is automatic
@@ -43,6 +44,7 @@ This session runs inside a we-happier tenant sandbox.
 ## Switching between sessions
 
 Use standard tmux shortcuts:
+
 - `Ctrl+B n` — next window
 - `Ctrl+B p` — previous window
 - `Ctrl+B w` — window list

@@ -1,10 +1,11 @@
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { injectSkills } from "@/skills/injector.js";
-import { SandboxRegistry, type ToolSandboxEntry } from "@/sandbox/registry.js";
-import { readFile, mkdir, rm } from "node:fs/promises";
 import { existsSync } from "node:fs";
-import { join } from "node:path";
+import { mkdir, readFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
+
+import { SandboxRegistry, type ToolSandboxEntry } from "@/sandbox/registry.js";
+import { injectSkills } from "@/skills/injector.js";
 
 const ENTRIES: ToolSandboxEntry[] = [
   {
@@ -57,7 +58,11 @@ describe("injectSkills", () => {
     const registry = new SandboxRegistry(ENTRIES);
     await injectSkills(skillsDir, registry);
 
-    const whitelistPath = join(skillsDir, "we-happier-sandbox-guard", "WHITELIST.md");
+    const whitelistPath = join(
+      skillsDir,
+      "we-happier-sandbox-guard",
+      "WHITELIST.md",
+    );
     expect(existsSync(whitelistPath)).toBe(true);
 
     const content = await readFile(whitelistPath, "utf-8");

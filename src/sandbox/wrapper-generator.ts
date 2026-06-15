@@ -1,5 +1,6 @@
-import { writeFile, chmod } from "node:fs/promises";
+import { chmod, writeFile } from "node:fs/promises";
 import { join } from "node:path";
+
 import type { ToolSandboxEntry } from "@/sandbox/registry";
 
 function buildHomeWrapperScript(

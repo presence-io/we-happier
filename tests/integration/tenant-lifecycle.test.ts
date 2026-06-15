@@ -1,10 +1,16 @@
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { mkdir, rm } from "node:fs/promises";
 import { existsSync } from "node:fs";
-import { join } from "node:path";
+import { mkdir, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { createTenant, deleteTenant, listTenants, activateTenant } from "@/tenant/manager.js";
+import { join } from "node:path";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
+
 import { readTenantConfig } from "@/tenant/config.js";
+import {
+  activateTenant,
+  createTenant,
+  deleteTenant,
+  listTenants,
+} from "@/tenant/manager.js";
 
 describe("tenant lifecycle", () => {
   let tempDir: string;
@@ -94,7 +100,11 @@ describe("tenant lifecycle", () => {
   it("injects skill files", async () => {
     const paths = await createTenant("frank", env);
     const spawnSkill = join(paths.skillsDir, "we-happier-spawn", "SKILL.md");
-    const guardSkill = join(paths.skillsDir, "we-happier-sandbox-guard", "SKILL.md");
+    const guardSkill = join(
+      paths.skillsDir,
+      "we-happier-sandbox-guard",
+      "SKILL.md",
+    );
     expect(existsSync(spawnSkill)).toBe(true);
     expect(existsSync(guardSkill)).toBe(true);
   });

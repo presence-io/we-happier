@@ -1,8 +1,9 @@
 import { writeFile } from "node:fs/promises";
-import { join } from "node:path";
 import { tmpdir } from "node:os";
-import { exec, spawnInteractive } from "@/utils/exec";
+import { join } from "node:path";
+
 import { ensureHappierInstalled } from "@/happier/check";
+import { exec, spawnInteractive } from "@/utils/exec";
 
 const MAX_WINDOWS_PER_SESSION = 10;
 const TMUX_HISTORY_LIMIT = 10000;
@@ -16,9 +17,7 @@ export async function killTmuxSession(sessionName: string): Promise<void> {
   await exec("tmux", ["kill-session", "-t", sessionName]);
 }
 
-export async function countTmuxWindows(
-  sessionName: string,
-): Promise<number> {
+export async function countTmuxWindows(sessionName: string): Promise<number> {
   const result = await exec("tmux", ["list-windows", "-t", sessionName]);
   if (result.exitCode !== 0) return 0;
   return result.stdout.trim().split("\n").filter(Boolean).length;
@@ -124,8 +123,6 @@ export async function createTmuxWindowWithHappier(options: {
   ]);
 }
 
-export async function attachTmuxSession(
-  sessionName: string,
-): Promise<number> {
+export async function attachTmuxSession(sessionName: string): Promise<number> {
   return spawnInteractive("tmux", ["attach-session", "-t", sessionName]);
 }

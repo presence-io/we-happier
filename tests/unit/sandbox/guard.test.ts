@@ -1,5 +1,9 @@
-import { describe, it, expect } from "vitest";
-import { checkCredentialCommand, formatWhitelistTable } from "@/sandbox/guard.js";
+import { describe, expect, it } from "vitest";
+
+import {
+  checkCredentialCommand,
+  formatWhitelistTable,
+} from "@/sandbox/guard.js";
 import { SandboxRegistry, type ToolSandboxEntry } from "@/sandbox/registry.js";
 
 const ENTRIES: ToolSandboxEntry[] = [

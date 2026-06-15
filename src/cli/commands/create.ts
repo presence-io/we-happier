@@ -1,10 +1,16 @@
 import { existsSync } from "node:fs";
-import { createTenant, activateTenant, getRegistry, getTenantPaths } from "@/tenant/manager";
+
+import { runHappierInteractive } from "@/happier/runner";
 import { readTenantConfig } from "@/tenant/config";
 import { buildTenantEnv, buildTenantPath, tmuxSessionName } from "@/tenant/env";
-import { runHappierInteractive } from "@/happier/runner";
-import { log } from "@/utils/logger";
+import {
+  activateTenant,
+  createTenant,
+  getRegistry,
+  getTenantPaths,
+} from "@/tenant/manager";
 import type { TenantPaths } from "@/tenant/paths";
+import { log } from "@/utils/logger";
 
 export async function handleCreate(username: string): Promise<void> {
   let paths: TenantPaths;
@@ -22,7 +28,9 @@ export async function handleCreate(username: string): Promise<void> {
         `Tenant "${username}" is disabled. Delete it first: we-happier delete ${username}`,
       );
     }
-    log.info(`Tenant "${username}" exists with status "${config?.status ?? "unknown"}". Retrying auth...`);
+    log.info(
+      `Tenant "${username}" exists with status "${config?.status ?? "unknown"}". Retrying auth...`,
+    );
     paths = existing;
   } else {
     paths = await createTenant(username);
@@ -32,7 +40,12 @@ export async function handleCreate(username: string): Promise<void> {
 
   const registry = getRegistry();
   const session = tmuxSessionName(username);
-  const tenantEnv = buildTenantEnv({ paths, registry, username, tmuxSession: session });
+  const tenantEnv = buildTenantEnv({
+    paths,
+    registry,
+    username,
+    tmuxSession: session,
+  });
   tenantEnv.PATH = buildTenantPath(paths, process.env.PATH ?? "");
 
   const exitCode = await runHappierInteractive(

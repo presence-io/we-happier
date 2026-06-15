@@ -1,7 +1,9 @@
 import { homedir } from "node:os";
-import { join, isAbsolute, resolve } from "node:path";
+import { isAbsolute, join, resolve } from "node:path";
 
-export function resolveWeHappierHome(env: NodeJS.ProcessEnv = process.env): string {
+export function resolveWeHappierHome(
+  env: NodeJS.ProcessEnv = process.env,
+): string {
   const override = env.WE_HAPPIER_HOME?.trim();
   if (override) {
     if (override.startsWith("~")) {

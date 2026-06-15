@@ -1,7 +1,8 @@
-import { describe, it, expect } from "vitest";
-import { resolveWeHappierHome, resolveTenantsDir } from "@/utils/paths.js";
 import { homedir } from "node:os";
 import { join, resolve } from "node:path";
+import { describe, expect, it } from "vitest";
+
+import { resolveTenantsDir, resolveWeHappierHome } from "@/utils/paths.js";
 
 describe("resolveWeHappierHome", () => {
   it("defaults to ~/.we-happier with no env override", () => {

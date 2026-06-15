@@ -1,4 +1,4 @@
-import { execFile, spawn, type SpawnOptions } from "node:child_process";
+import { type SpawnOptions, execFile, spawn } from "node:child_process";
 
 export interface ExecResult {
   stdout: string;
@@ -12,14 +12,24 @@ export function exec(
   options?: { env?: NodeJS.ProcessEnv },
 ): Promise<ExecResult> {
   return new Promise((resolve) => {
-    execFile(command, args, { encoding: "utf8", ...options }, (error, stdout, stderr) => {
-      const errWithStatus = error as (NodeJS.ErrnoException & { status?: number }) | null;
-      resolve({
-        stdout: stdout,
-        stderr: stderr,
-        exitCode: errWithStatus?.code === "ENOENT" ? 127 : errWithStatus?.status ?? 0,
-      });
-    });
+    execFile(
+      command,
+      args,
+      { encoding: "utf8", ...options },
+      (error, stdout, stderr) => {
+        const errWithStatus = error as
+          | (NodeJS.ErrnoException & { status?: number })
+          | null;
+        resolve({
+          stdout: stdout,
+          stderr: stderr,
+          exitCode:
+            errWithStatus?.code === "ENOENT"
+              ? 127
+              : (errWithStatus?.status ?? 0),
+        });
+      },
+    );
   });
 }
 

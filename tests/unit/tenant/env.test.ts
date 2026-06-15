@@ -1,6 +1,11 @@
-import { describe, it, expect } from "vitest";
-import { buildTenantEnv, buildTenantPath, tmuxSessionName } from "@/tenant/env.js";
+import { describe, expect, it } from "vitest";
+
 import { SandboxRegistry } from "@/sandbox/registry.js";
+import {
+  buildTenantEnv,
+  buildTenantPath,
+  tmuxSessionName,
+} from "@/tenant/env.js";
 import type { TenantPaths } from "@/tenant/paths.js";
 
 function makePaths(root: string): TenantPaths {
@@ -99,7 +104,9 @@ describe("buildTenantPath", () => {
   it("prepends sandbox bin to existing PATH", () => {
     const paths = makePaths("/tmp/tenants/alice");
     const result = buildTenantPath(paths, "/usr/bin:/usr/local/bin");
-    expect(result).toBe("/tmp/tenants/alice/sandbox/bin:/usr/bin:/usr/local/bin");
+    expect(result).toBe(
+      "/tmp/tenants/alice/sandbox/bin:/usr/bin:/usr/local/bin",
+    );
   });
 });
 

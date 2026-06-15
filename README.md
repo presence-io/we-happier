@@ -49,41 +49,41 @@ Three layers of defense ensure credentials never leak between tenants:
 
 Tools that respect config env vars get pointed to the tenant's sandbox directory automatically. The AI agent inside happier inherits these env vars, so `aws configure`, `gcloud auth login`, `gh auth login`, etc. all write to the tenant sandbox.
 
-| Tool | Env vars |
-| ------ | ---------- |
-| AWS CLI | `AWS_CONFIG_FILE`, `AWS_SHARED_CREDENTIALS_FILE` |
-| Google Cloud | `CLOUDSDK_CONFIG` |
-| Azure CLI | `AZURE_CONFIG_DIR` |
-| Docker | `DOCKER_CONFIG` |
-| kubectl | `KUBECONFIG` |
-| GitHub CLI | `GH_CONFIG_DIR` |
-| Helm | `HELM_CONFIG_HOME`, `HELM_DATA_HOME`, `HELM_CACHE_HOME` |
-| Terraform | `TF_CLI_CONFIG_FILE` |
-| npm | `NPM_CONFIG_USERCONFIG` |
-| pip | `PIP_CONFIG_FILE` |
-| Cargo | `CARGO_HOME` |
-| GPG | `GNUPGHOME` |
-| pnpm | `PNPM_HOME` |
-| Claude Code | `CLAUDE_CONFIG_DIR` |
-| Pulumi | `PULUMI_HOME` |
-| Vercel | `VERCEL_CONFIG` |
-| Fly.io | `FLY_CONFIG_DIR` |
-| Supabase | `SUPABASE_CONFIG_DIR` |
-| Railway | `RAILWAY_CONFIG_DIR` |
-| Netlify | `NETLIFY_CONFIG_DIR` |
-| Gradle | `GRADLE_USER_HOME` |
+| Tool         | Env vars                                                |
+| ------------ | ------------------------------------------------------- |
+| AWS CLI      | `AWS_CONFIG_FILE`, `AWS_SHARED_CREDENTIALS_FILE`        |
+| Google Cloud | `CLOUDSDK_CONFIG`                                       |
+| Azure CLI    | `AZURE_CONFIG_DIR`                                      |
+| Docker       | `DOCKER_CONFIG`                                         |
+| kubectl      | `KUBECONFIG`                                            |
+| GitHub CLI   | `GH_CONFIG_DIR`                                         |
+| Helm         | `HELM_CONFIG_HOME`, `HELM_DATA_HOME`, `HELM_CACHE_HOME` |
+| Terraform    | `TF_CLI_CONFIG_FILE`                                    |
+| npm          | `NPM_CONFIG_USERCONFIG`                                 |
+| pip          | `PIP_CONFIG_FILE`                                       |
+| Cargo        | `CARGO_HOME`                                            |
+| GPG          | `GNUPGHOME`                                             |
+| pnpm         | `PNPM_HOME`                                             |
+| Claude Code  | `CLAUDE_CONFIG_DIR`                                     |
+| Pulumi       | `PULUMI_HOME`                                           |
+| Vercel       | `VERCEL_CONFIG`                                         |
+| Fly.io       | `FLY_CONFIG_DIR`                                        |
+| Supabase     | `SUPABASE_CONFIG_DIR`                                   |
+| Railway      | `RAILWAY_CONFIG_DIR`                                    |
+| Netlify      | `NETLIFY_CONFIG_DIR`                                    |
+| Gradle       | `GRADLE_USER_HOME`                                      |
 
 ### Layer 2 — HOME wrapper isolation (Tier 2, 5 tools)
 
 Tools that hardcode `$HOME/.config-dir/` get shell wrapper scripts placed in `sandbox/bin/`. Each wrapper strips itself from PATH, finds the real binary, sets `HOME` to the overlay directory, then `exec`s.
 
-| Tool | Config path |
-| ------ | ------------- |
-| Aliyun CLI | `~/.aliyun/` |
-| Lark CLI | `~/.lark-cli/` |
-| ossutil | `~/.ossutilconfig` |
-| Ansible | `~/.ansible/` |
-| Vagrant | `~/.vagrant.d/` |
+| Tool       | Config path        |
+| ---------- | ------------------ |
+| Aliyun CLI | `~/.aliyun/`       |
+| Lark CLI   | `~/.lark-cli/`     |
+| ossutil    | `~/.ossutilconfig` |
+| Ansible    | `~/.ansible/`      |
+| Vagrant    | `~/.vagrant.d/`    |
 
 ### Layer 3 — Per-tenant tool policy
 
@@ -120,8 +120,8 @@ Launch happier in an isolated tmux session.
 
 Options:
 
-| Flag | Description |
-| ------ | ------------- |
+| Flag           | Description                                                                                                                        |
+| -------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
 | `-d, --detach` | Start session without attaching. Useful for remote/headless use via SSH. Attach later with `tmux attach -t we-happier-<username>`. |
 
 ### `we-happier -- [happier-args...]`
@@ -163,8 +163,8 @@ Show detailed info for a tenant: paths, config, installed tools, and blocked too
 
 Kill tmux session (if running) and remove all tenant data. Prompts for confirmation before deleting.
 
-| Flag | Description |
-| ------ | ------------- |
+| Flag          | Description                   |
+| ------------- | ----------------------------- |
 | `-f, --force` | Skip the confirmation prompt. |
 
 ## AI skills
@@ -199,8 +199,8 @@ Requires:
 
 ## Configuration
 
-| Env var | Description | Default |
-| --------- | ------------- | --------- |
+| Env var           | Description                        | Default         |
+| ----------------- | ---------------------------------- | --------------- |
 | `WE_HAPPIER_HOME` | Base directory for all tenant data | `~/.we-happier` |
 
 Per-tenant tool policy is stored in each tenant's `tenant.json` as `disabledTools: string[]` and managed via `we-happier policy` commands.

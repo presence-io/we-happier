@@ -1,5 +1,6 @@
-import { describe, it, expect } from "vitest";
-import { validateUsername, resolveTenantPaths } from "@/tenant/paths.js";
+import { describe, expect, it } from "vitest";
+
+import { resolveTenantPaths, validateUsername } from "@/tenant/paths.js";
 
 describe("validateUsername", () => {
   it("accepts valid lowercase usernames", () => {
@@ -47,11 +48,17 @@ describe("resolveTenantPaths", () => {
     const paths = resolveTenantPaths("/home/.we-happier/tenants", "alice");
 
     expect(paths.root).toBe("/home/.we-happier/tenants/alice");
-    expect(paths.configFile).toBe("/home/.we-happier/tenants/alice/tenant.json");
+    expect(paths.configFile).toBe(
+      "/home/.we-happier/tenants/alice/tenant.json",
+    );
     expect(paths.happierHome).toBe("/home/.we-happier/tenants/alice/happier");
     expect(paths.sandboxDir).toBe("/home/.we-happier/tenants/alice/sandbox");
-    expect(paths.sandboxBin).toBe("/home/.we-happier/tenants/alice/sandbox/bin");
-    expect(paths.homeOverlay).toBe("/home/.we-happier/tenants/alice/sandbox/home-overlay");
+    expect(paths.sandboxBin).toBe(
+      "/home/.we-happier/tenants/alice/sandbox/bin",
+    );
+    expect(paths.homeOverlay).toBe(
+      "/home/.we-happier/tenants/alice/sandbox/home-overlay",
+    );
     expect(paths.skillsDir).toBe("/home/.we-happier/tenants/alice/skills");
   });
 });

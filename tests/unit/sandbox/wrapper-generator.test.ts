@@ -1,9 +1,10 @@
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { generateWrappers } from "@/sandbox/wrapper-generator.js";
-import { readFile, mkdir, rm, stat } from "node:fs/promises";
-import { join } from "node:path";
+import { mkdir, readFile, rm, stat } from "node:fs/promises";
 import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
+
 import type { ToolSandboxEntry } from "@/sandbox/registry.js";
+import { generateWrappers } from "@/sandbox/wrapper-generator.js";
 
 const ENTRIES: ToolSandboxEntry[] = [
   {
@@ -79,7 +80,9 @@ describe("generateWrappers", () => {
     const content = await readFile(join(sandboxDir, "bin", "aliyun"), "utf-8");
     expect(content).toContain("#!/bin/sh");
     expect(content).toContain('command -v "aliyun"');
-    expect(content).toContain(`export HOME="${join(sandboxDir, "home-overlay")}"`);
+    expect(content).toContain(
+      `export HOME="${join(sandboxDir, "home-overlay")}"`,
+    );
     expect(content).toContain('exec "$real_bin" "$@"');
   });
 });

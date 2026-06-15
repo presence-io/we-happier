@@ -9,5 +9,7 @@ export async function ensureTmuxInstalled(): Promise<void> {
       ? "brew install tmux"
       : "sudo apt-get install tmux  # or: sudo yum install tmux";
 
-  throw new Error(`tmux is required but not installed.\nInstall it with: ${hint}`);
+  throw new Error(
+    `tmux is required but not installed.\nInstall it with: ${hint}`,
+  );
 }

@@ -1,4 +1,5 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
+
 import { buildSandboxEnv, resolveSandboxDirs } from "@/sandbox/env-builder.js";
 import { SandboxRegistry, type ToolSandboxEntry } from "@/sandbox/registry.js";
 

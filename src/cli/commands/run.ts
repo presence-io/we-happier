@@ -1,14 +1,15 @@
 import { existsSync } from "node:fs";
+
+import { checkHappierAuth, findHappierBinary } from "@/happier/check";
 import { readTenantConfig, writeTenantConfig } from "@/tenant/config";
-import { getTenantPaths, getRegistryForTenant } from "@/tenant/manager";
 import { buildTenantEnv, buildTenantPath, tmuxSessionName } from "@/tenant/env";
+import { getRegistryForTenant, getTenantPaths } from "@/tenant/manager";
 import { ensureTmuxInstalled } from "@/tmux/check";
-import { findHappierBinary, checkHappierAuth } from "@/happier/check";
 import {
-  tmuxSessionExists,
+  attachTmuxSession,
   createTmuxSessionWithHappier,
   createTmuxWindowWithHappier,
-  attachTmuxSession,
+  tmuxSessionExists,
 } from "@/tmux/session";
 import { log } from "@/utils/logger";
 
@@ -39,7 +40,12 @@ export async function handleRun(
 
   const registry = await getRegistryForTenant(username);
   const session = tmuxSessionName(username);
-  const tenantEnv = buildTenantEnv({ paths, registry, username, tmuxSession: session });
+  const tenantEnv = buildTenantEnv({
+    paths,
+    registry,
+    username,
+    tmuxSession: session,
+  });
   tenantEnv.PATH = buildTenantPath(paths, process.env.PATH ?? "");
 
   const happierBin = await findHappierBinary();

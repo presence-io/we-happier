@@ -1,15 +1,16 @@
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { mkdir, rm, readFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
-import { join } from "node:path";
+import { mkdir, readFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
+
+import { buildSandboxEnv } from "@/sandbox/env-builder.js";
+import { readTenantConfig, writeTenantConfig } from "@/tenant/config.js";
 import {
   createTenant,
   getRegistryForTenant,
   regenerateSandbox,
 } from "@/tenant/manager.js";
-import { readTenantConfig, writeTenantConfig } from "@/tenant/config.js";
-import { buildSandboxEnv } from "@/sandbox/env-builder.js";
 
 describe("policy lifecycle", () => {
   let tempDir: string;
